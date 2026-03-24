@@ -1,0 +1,46 @@
+{
+  "name": "Sorteo de Cadena",
+  "short_name": "Cadena",
+  "description": "Sortea y consulta tu puesto en la cadena de ahorro.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1d4ed8",
+  "lang": "es-419",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Hacer mi sorteo",
+      "short_name": "Sortear",
+      "url": "/",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
