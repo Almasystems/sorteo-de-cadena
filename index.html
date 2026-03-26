@@ -302,9 +302,11 @@
       if (fromStandalone) {
         appFrame.addEventListener('load', function once() {
           appFrame.removeEventListener('load', once);
-          setTimeout(()=>{ splash.classList.add('hide'); setTimeout(()=>splash.classList.remove('active'),700); }, 400);
+          splash.classList.add('hide');
+          setTimeout(()=>splash.classList.remove('active'), 700);
         });
-        setTimeout(()=>splash.classList.add('hide'), 9000);
+        // Fallback: ocultar splash máximo a los 5 segundos
+        setTimeout(()=>{ splash.classList.add('hide'); setTimeout(()=>splash.classList.remove('active'),700); }, 5000);
       } else {
         landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
         setTimeout(()=>{ landing.style.display='none'; }, 350);
