@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="theme-color" content="#f472b6" />
   <meta name="description" content="Sorteo de Cadena — Instala la app y sortea tu puesto." />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -17,7 +17,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; overflow: hidden; }
-    body { font-family: 'DM Sans', sans-serif; background: #0f172a; }
+    body { font-family: 'DM Sans', sans-serif; background: #4a0020; }
 
     /* ══ LANDING ══ */
     #landing {
@@ -28,12 +28,12 @@
     }
     #landing-bg {
       position: absolute; inset: 0;
-      background: linear-gradient(160deg, #0f172a 0%, #1e3a8a 45%, #1d4ed8 100%);
+      background: linear-gradient(160deg, #4a0020 0%, #be185d 45%, #f472b6 100%);
       z-index: 0;
     }
     .orb { position:absolute; border-radius:50%; filter:blur(80px); z-index:0; pointer-events:none; }
-    .orb-1 { width:420px;height:420px;background:rgba(234,88,12,.17);top:-90px;right:-90px;animation:drift1 8s ease-in-out infinite alternate; }
-    .orb-2 { width:320px;height:320px;background:rgba(59,130,246,.18);bottom:220px;left:-70px;animation:drift2 10s ease-in-out infinite alternate; }
+    .orb-1 { width:420px;height:420px;background:rgba(251,113,133,.22);top:-90px;right:-90px;animation:drift1 8s ease-in-out infinite alternate; }
+    .orb-2 { width:320px;height:320px;background:rgba(244,114,182,.18);bottom:220px;left:-70px;animation:drift2 10s ease-in-out infinite alternate; }
     @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(-28px,28px)} }
     @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(22px,-22px)} }
 
@@ -45,7 +45,7 @@
 
     .app-icon {
       width:118px; height:118px; border-radius:28px; overflow:hidden;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 24px 60px rgba(0,0,0,.5), 0 8px 24px rgba(234,88,12,.22);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 24px 60px rgba(0,0,0,.5), 0 8px 24px rgba(190,24,93,.22);
       margin-bottom:26px; flex-shrink:0;
       animation:iconFloat 4s ease-in-out infinite;
     }
@@ -57,7 +57,7 @@
       color:#fff; letter-spacing:-.03em; text-align:center; line-height:1.1;
       margin-bottom:34px;
     }
-    .app-title span { color:#fb923c; }
+    .app-title span { color:#fda4c8; }
 
     /* ── Slider ── */
     #slider-wrap { width:100%; overflow:hidden; }
@@ -76,7 +76,7 @@
 
     #slider-dots { display:flex; gap:7px; justify-content:center; margin-top:22px; }
     .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .35s ease;cursor:pointer; }
-    .dot.active { width:24px;border-radius:3px;background:#fb923c; }
+    .dot.active { width:24px;border-radius:3px;background:#fda4c8; }
 
     /* ══ PANEL INFERIOR ══ */
     #bottom-panel {
@@ -93,20 +93,20 @@
       gap:12px; align-items:flex-start; margin-bottom:16px;
     }
     #ios-hint-box.visible { display:flex; }
-    .ios-icon-b { width:36px;height:36px;flex-shrink:0;background:#1d4ed8;border-radius:9px;display:flex;align-items:center;justify-content:center; }
+    .ios-icon-b { width:36px;height:36px;flex-shrink:0;background:#be185d;border-radius:9px;display:flex;align-items:center;justify-content:center; }
     .ios-ht { font-weight:700;font-size:.87rem;color:#fff;margin-bottom:3px; }
     .ios-hb { font-size:.77rem;color:rgba(255,255,255,.58);line-height:1.5; }
 
     #main-install-btn {
-      width:100%; background:#ea580c; color:#fff;
+      width:100%; background:#be185d; color:#fff;
       font-family:'DM Sans',sans-serif; font-size:1.08rem; font-weight:800;
       padding:18px 24px; border:none; border-radius:18px; cursor:pointer;
       display:flex; align-items:center; justify-content:center; gap:11px;
-      box-shadow:0 8px 32px rgba(234,88,12,.40),0 2px 8px rgba(0,0,0,.2);
+      box-shadow:0 8px 32px rgba(190,24,93,.40),0 2px 8px rgba(0,0,0,.2);
       transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
       letter-spacing:-.01em;
     }
-    #main-install-btn:hover  { background:#f97316;box-shadow:0 12px 40px rgba(249,115,22,.5);transform:translateY(-2px); }
+    #main-install-btn:hover  { background:#db2777;box-shadow:0 12px 40px rgba(219,39,119,.5);transform:translateY(-2px); }
     #main-install-btn:active { transform:scale(.97); }
     #main-install-btn:disabled { opacity:.4;cursor:default;transform:none; }
 
@@ -115,11 +115,11 @@
     /* ══ APP VIEW ══ */
     #app-view { display:none;position:fixed;inset:0;z-index:999;background:#fff; }
     #app-view.active { display:block; }
-    #app-topbar { position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#1d4ed8;z-index:10; }
+    #app-topbar { position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#be185d;z-index:10; }
     #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; }
 
     /* ══ SPLASH STANDALONE ══ */
-    #standalone-splash { display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#0f172a 0%,#1e3a8a 50%,#ea580c 100%);flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease; }
+    #standalone-splash { display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#4a0020 0%,#be185d 50%,#f472b6 100%);flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease; }
     #standalone-splash.active { display:flex; }
     #standalone-splash.hide   { opacity:0;pointer-events:none; }
     .ss-icon { width:108px;height:108px;border-radius:26px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);margin-bottom:24px;animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both; }
@@ -177,9 +177,9 @@
             <p class="slide-sub">Tu número y mes quedan guardados automáticamente</p>
           </div>
           <div class="slide">
-            <div class="slide-emoji">📲</div>
-            <p class="slide-text">Úsala como una app<br>nativa en tu celular</p>
-            <p class="slide-sub">Sin descargar nada de la tienda</p>
+            <div class="slide-emoji">🌟</div>
+            <p class="slide-text">Ahorra y haz posible<br>tus metas</p>
+            <p class="slide-sub">Cada número es un paso más cerca de lo que quieres</p>
           </div>
         </div>
       </div>
