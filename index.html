@@ -113,10 +113,32 @@
     #install-status { text-align:center;font-size:.77rem;color:rgba(255,255,255,.38);margin-top:13px;min-height:18px; }
 
     /* ══ APP VIEW ══ */
-    #app-view { display:none;position:fixed;inset:0;z-index:999;background:#fff; }
+    #app-view { display:none;position:fixed;inset:0;z-index:999;background:#4a0020; }
     #app-view.active { display:block; }
     #app-topbar { position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#be185d;z-index:10; }
-    #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; }
+    #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; opacity:0; transition: opacity .4s ease; }
+    #app-frame.loaded { opacity:1; }
+
+    /* ══ LOADER ══ */
+    #app-loader {
+      position:absolute; inset:0; z-index:5;
+      background: linear-gradient(160deg,#4a0020 0%,#be185d 50%,#f472b6 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:28px; transition:opacity .5s ease;
+    }
+    #app-loader.hide { opacity:0; pointer-events:none; }
+    .loader-icon { width:100px;height:100px;border-radius:24px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.4); animation:loaderFloat 3s ease-in-out infinite; }
+    .loader-icon img { width:100%;height:100%;display:block; }
+    @keyframes loaderFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .loader-spinner {
+      width:44px; height:44px;
+      border:3px solid rgba(255,255,255,.2);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .loader-text { color:rgba(255,255,255,.65); font-size:.88rem; font-weight:600; letter-spacing:.02em; }
 
 
 
@@ -202,6 +224,11 @@
 
   <div id="app-view">
     <div id="app-topbar"></div>
+    <div id="app-loader">
+      <div class="loader-icon"><img src="icons/icon-192.png" alt="Cadena"></div>
+      <div class="loader-spinner"></div>
+      <p class="loader-text">Cargando…</p>
+    </div>
     <iframe id="app-frame" src="about:blank" title="Sorteo de Cadena"
       sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
   </div>
@@ -221,6 +248,7 @@
     const installStatus = document.getElementById('install-status');
     const iosHint       = document.getElementById('ios-hint-box');
     const toast         = document.getElementById('toast');
+    const appLoader     = document.getElementById('app-loader');
     const offlineBanner = document.getElementById('offline-banner');
 
     let deferredPrompt = null;
@@ -280,6 +308,14 @@
       appFrame.src = GAS;
       landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
       setTimeout(()=>{ landing.style.display='none'; }, 350);
+      // Ocultar loader cuando el iframe carga
+      appFrame.addEventListener('load', function once() {
+        appFrame.removeEventListener('load', once);
+        appFrame.classList.add('loaded');
+        setTimeout(()=>{ appLoader.classList.add('hide'); setTimeout(()=>appLoader.style.display='none', 600); }, 200);
+      });
+      // Fallback: ocultar loader máximo 12 segundos
+      setTimeout(()=>{ appLoader.classList.add('hide'); setTimeout(()=>appLoader.style.display='none', 600); }, 12000);
     }
 
     window.addEventListener('offline', ()=>offlineBanner.classList.add('show'));
