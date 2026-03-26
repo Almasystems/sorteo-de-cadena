@@ -116,17 +116,15 @@
     #app-view { display:none;position:fixed;inset:0;z-index:999;background:#4a0020; }
     #app-view.active { display:block; }
     #app-topbar { position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#be185d;z-index:10; }
-    #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; opacity:0; transition: opacity .4s ease; }
-    #app-frame.loaded { opacity:1; }
+    #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; opacity:0; }
 
     /* ══ LOADER ══ */
     #app-loader {
-      position:absolute; inset:0; z-index:5;
+      position:absolute; inset:0; z-index:20;
       background: linear-gradient(160deg,#4a0020 0%,#be185d 50%,#f472b6 100%);
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:28px; transition:opacity .5s ease;
+      gap:28px;
     }
-    #app-loader.hide { opacity:0; pointer-events:none; }
     .loader-icon { width:100px;height:100px;border-radius:24px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.4); animation:loaderFloat 3s ease-in-out infinite; }
     .loader-icon img { width:100%;height:100%;display:block; }
     @keyframes loaderFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
@@ -306,16 +304,29 @@
     function launchApp(fromStandalone) {
       appView.classList.add('active');
       appFrame.src = GAS;
-      landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
-      setTimeout(()=>{ landing.style.display='none'; }, 350);
-      // Ocultar loader cuando el iframe carga
+      if (!fromStandalone) {
+        landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
+        setTimeout(()=>{ landing.style.display='none'; }, 350);
+      }
+
+      // El evento load en iframes cross-origin (GAS) no es confiable.
+      // Usamos un temporizador fijo: mostrar loader 4s y luego revelar el iframe.
+      function hideLoader() {
+        appFrame.style.opacity = '1';
+        appLoader.style.transition = 'opacity .5s ease';
+        appLoader.style.opacity = '0';
+        setTimeout(()=>{ appLoader.style.display = 'none'; }, 500);
+      }
+
+      // Intentar con evento load (si funciona, mejor)
+      let loaderHidden = false;
       appFrame.addEventListener('load', function once() {
         appFrame.removeEventListener('load', once);
-        appFrame.classList.add('loaded');
-        setTimeout(()=>{ appLoader.classList.add('hide'); setTimeout(()=>appLoader.style.display='none', 600); }, 200);
+        if (!loaderHidden) { loaderHidden = true; setTimeout(hideLoader, 300); }
       });
-      // Fallback: ocultar loader máximo 12 segundos
-      setTimeout(()=>{ appLoader.classList.add('hide'); setTimeout(()=>appLoader.style.display='none', 600); }, 12000);
+
+      // Fallback garantizado a los 4 segundos
+      setTimeout(()=>{ if (!loaderHidden) { loaderHidden = true; hideLoader(); } }, 4000);
     }
 
     window.addEventListener('offline', ()=>offlineBanner.classList.add('show'));
