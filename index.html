@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#f472b6" />
+  <meta name="theme-color" content="#be185d" />
   <meta name="description" content="Sorteo de Cadena — Instala la app y sortea tu puesto." />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -28,12 +28,12 @@
     }
     #landing-bg {
       position: absolute; inset: 0;
-      background: linear-gradient(160deg, #4a0020 0%, #be185d 45%, #f472b6 100%);
+      background: linear-gradient(160deg, #4a0020 0%, #be185d 50%, #f472b6 100%);
       z-index: 0;
     }
     .orb { position:absolute; border-radius:50%; filter:blur(80px); z-index:0; pointer-events:none; }
     .orb-1 { width:420px;height:420px;background:rgba(251,113,133,.22);top:-90px;right:-90px;animation:drift1 8s ease-in-out infinite alternate; }
-    .orb-2 { width:320px;height:320px;background:rgba(244,114,182,.18);bottom:220px;left:-70px;animation:drift2 10s ease-in-out infinite alternate; }
+    .orb-2 { width:320px;height:320px;background:rgba(244,114,182,.20);bottom:220px;left:-70px;animation:drift2 10s ease-in-out infinite alternate; }
     @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(-28px,28px)} }
     @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(22px,-22px)} }
 
@@ -45,7 +45,7 @@
 
     .app-icon {
       width:118px; height:118px; border-radius:28px; overflow:hidden;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 24px 60px rgba(0,0,0,.5), 0 8px 24px rgba(190,24,93,.22);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 24px 60px rgba(0,0,0,.5), 0 8px 24px rgba(190,24,93,.30);
       margin-bottom:26px; flex-shrink:0;
       animation:iconFloat 4s ease-in-out infinite;
     }
@@ -72,7 +72,7 @@
     }
     .slide-emoji { font-size:2.5rem; line-height:1; margin-bottom:10px; }
     .slide-text  { font-size:1.06rem; font-weight:700; color:rgba(255,255,255,.92); text-align:center; line-height:1.35; }
-    .slide-sub   { font-size:.84rem; color:rgba(255,255,255,.48); text-align:center; margin-top:7px; line-height:1.45; }
+    .slide-sub   { font-size:.84rem; color:rgba(255,255,255,.55); text-align:center; margin-top:7px; line-height:1.45; }
 
     #slider-dots { display:flex; gap:7px; justify-content:center; margin-top:22px; }
     .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .35s ease;cursor:pointer; }
@@ -102,11 +102,11 @@
       font-family:'DM Sans',sans-serif; font-size:1.08rem; font-weight:800;
       padding:18px 24px; border:none; border-radius:18px; cursor:pointer;
       display:flex; align-items:center; justify-content:center; gap:11px;
-      box-shadow:0 8px 32px rgba(190,24,93,.40),0 2px 8px rgba(0,0,0,.2);
+      box-shadow:0 8px 32px rgba(190,24,93,.45),0 2px 8px rgba(0,0,0,.2);
       transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
       letter-spacing:-.01em;
     }
-    #main-install-btn:hover  { background:#db2777;box-shadow:0 12px 40px rgba(219,39,119,.5);transform:translateY(-2px); }
+    #main-install-btn:hover  { background:#db2777;box-shadow:0 12px 40px rgba(219,39,119,.55);transform:translateY(-2px); }
     #main-install-btn:active { transform:scale(.97); }
     #main-install-btn:disabled { opacity:.4;cursor:default;transform:none; }
 
@@ -126,7 +126,7 @@
     .ss-icon img { width:100%;height:100%;display:block; }
     @keyframes popIn  { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
     .ss-title { color:#fff;font-size:1.7rem;font-weight:900;letter-spacing:-.02em;animation:fadeUp .5s .2s both; }
-    .ss-sub   { color:rgba(255,255,255,.55);font-size:.9rem;margin-top:8px;animation:fadeUp .5s .35s both; }
+    .ss-sub   { color:rgba(255,255,255,.65);font-size:.9rem;margin-top:8px;animation:fadeUp .5s .35s both; }
     .ss-dots  { display:flex;gap:8px;margin-top:44px;animation:fadeUp .5s .45s both; }
     .ss-dots span { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);animation:blink 1.2s ease-in-out infinite; }
     .ss-dots span:nth-child(2) { animation-delay:.2s; }
@@ -135,7 +135,7 @@
     @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 
     /* Toast */
-    #toast { position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;transform:translateX(-50%) translateY(60px);background:rgba(15,23,42,.95);color:#fff;font-size:.83rem;font-weight:600;padding:12px 24px;border-radius:100px;z-index:5000;backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.15);transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;white-space:nowrap; }
+    #toast { position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;transform:translateX(-50%) translateY(60px);background:rgba(74,0,32,.95);color:#fff;font-size:.83rem;font-weight:600;padding:12px 24px;border-radius:100px;z-index:5000;backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.15);transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;white-space:nowrap; }
     #toast.show { transform:translateX(-50%) translateY(0);opacity:1; }
 
     /* Offline */
@@ -162,13 +162,13 @@
         <img src="icons/icon-512.png" alt="Sorteo de Cadena">
       </div>
 
-      <h1 class="app-title">Sorteo de<br><span>Cadena</span></h1>
+      <h1 class="app-title">Sorteo de <span>Cadena</span></h1>
 
       <div id="slider-wrap">
         <div id="slider-track">
           <div class="slide">
             <div class="slide-emoji">🎯</div>
-            <p class="slide-text">Instala la app y sortea<br>tu puesto en segundos</p>
+            <p class="slide-text">Sortea tu número<br>de la cadena</p>
             <p class="slide-sub">Rápido, justo y sin complicaciones</p>
           </div>
           <div class="slide">
