@@ -118,21 +118,8 @@
     #app-topbar { position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#be185d;z-index:10; }
     #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; }
 
-    /* ══ SPLASH STANDALONE ══ */
-    #standalone-splash { display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#4a0020 0%,#be185d 50%,#f472b6 100%);flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease; }
-    #standalone-splash.active { display:flex; }
-    #standalone-splash.hide   { opacity:0;pointer-events:none; }
-    .ss-icon { width:108px;height:108px;border-radius:26px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);margin-bottom:24px;animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both; }
-    .ss-icon img { width:100%;height:100%;display:block; }
-    @keyframes popIn  { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
-    .ss-title { color:#fff;font-size:1.7rem;font-weight:900;letter-spacing:-.02em;animation:fadeUp .5s .2s both; }
-    .ss-sub   { color:rgba(255,255,255,.65);font-size:.9rem;margin-top:8px;animation:fadeUp .5s .35s both; }
-    .ss-dots  { display:flex;gap:8px;margin-top:44px;animation:fadeUp .5s .45s both; }
-    .ss-dots span { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);animation:blink 1.2s ease-in-out infinite; }
-    .ss-dots span:nth-child(2) { animation-delay:.2s; }
-    .ss-dots span:nth-child(3) { animation-delay:.4s; }
-    @keyframes blink  { 0%,100%{opacity:.25;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+
 
     /* Toast */
     #toast { position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;transform:translateX(-50%) translateY(60px);background:rgba(74,0,32,.95);color:#fff;font-size:.83rem;font-weight:600;padding:12px 24px;border-radius:100px;z-index:5000;backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.15);transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;white-space:nowrap; }
@@ -145,12 +132,6 @@
 </head>
 <body>
 
-  <div id="standalone-splash">
-    <div class="ss-icon"><img src="icons/icon-192.png" alt="Cadena"></div>
-    <p class="ss-title">Sorteo de Cadena</p>
-    <p class="ss-sub">Cargando…</p>
-    <div class="ss-dots"><span></span><span></span><span></span></div>
-  </div>
 
   <div id="landing">
     <div id="landing-bg"></div>
@@ -239,7 +220,6 @@
     const installBtn    = document.getElementById('main-install-btn');
     const installStatus = document.getElementById('install-status');
     const iosHint       = document.getElementById('ios-hint-box');
-    const splash        = document.getElementById('standalone-splash');
     const toast         = document.getElementById('toast');
     const offlineBanner = document.getElementById('offline-banner');
 
@@ -248,12 +228,11 @@
     if ('serviceWorker' in navigator)
       navigator.serviceWorker.register('service-worker.js').catch(()=>{});
 
-    /* Standalone */
+    /* Standalone — ir directo a la app */
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
     if (isStandalone) {
-      splash.classList.add('active');
       landing.style.display = 'none';
-      launchApp(true);
+      launchApp(false);
       return;
     }
 
@@ -299,18 +278,8 @@
     function launchApp(fromStandalone) {
       appView.classList.add('active');
       appFrame.src = GAS;
-      if (fromStandalone) {
-        appFrame.addEventListener('load', function once() {
-          appFrame.removeEventListener('load', once);
-          splash.classList.add('hide');
-          setTimeout(()=>splash.classList.remove('active'), 700);
-        });
-        // Fallback: ocultar splash máximo a los 5 segundos
-        setTimeout(()=>{ splash.classList.add('hide'); setTimeout(()=>splash.classList.remove('active'),700); }, 5000);
-      } else {
-        landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
-        setTimeout(()=>{ landing.style.display='none'; }, 350);
-      }
+      landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
+      setTimeout(()=>{ landing.style.display='none'; }, 350);
     }
 
     window.addEventListener('offline', ()=>offlineBanner.classList.add('show'));
