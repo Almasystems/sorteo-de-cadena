@@ -216,7 +216,7 @@
         Instalar App
       </button>
 
-      <p id="install-status">Verificando compatibilidad…</p>
+      <p id="install-status">Verificando</p>
     </div>
   </div>
 
@@ -277,7 +277,7 @@
       e.preventDefault();
       deferredPrompt = e;
       installBtn.disabled = false;
-      installStatus.textContent = '¡Tu dispositivo es compatible!';
+      installStatus.textContent = '¡App para Sorteos de ahorro!';
     });
 
     installBtn.addEventListener('click', async () => {
