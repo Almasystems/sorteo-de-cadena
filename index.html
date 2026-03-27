@@ -1,457 +1,353 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <base target="_top">
-  <title>Sorteo de Puestos</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#be185d" />
+  <meta name="description" content="Sorteo de Cadena — Instala la app y sortea tu puesto." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Cadena" />
+  <title>Sorteo de Cadena</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background: #000; margin: 0; overflow-x: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'DM Sans', sans-serif; background: #4a0020; }
 
-    /* VIDEO FONDO — dos videos para crossfade sin negro */
-    #video-background {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: -2;
-      /* Imagen de respaldo mientras carga el primer video — nunca negro */
-      background: #1a1a2e url('https://cdn.pixabay.com/photo/2017/08/10/02/05/tiles-2617112_1280.jpg') center/cover no-repeat;
+    /* ══ LANDING ══ */
+    #landing {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      overflow: hidden;
     }
-    #video-background video {
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-      opacity: 0; /* Empieza invisible — fade in cuando esté listo */
-      transition: opacity 0.8s ease-in-out;
+    #landing-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, #4a0020 0%, #be185d 50%, #f472b6 100%);
+      z-index: 0;
     }
-    #video-background video.active {
-      opacity: 1;
-    }
-    #video-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: -1;
-      background: rgba(0, 0, 0, 0.45);
+    .orb { position:absolute; border-radius:50%; filter:blur(80px); z-index:0; pointer-events:none; }
+    .orb-1 { width:420px;height:420px;background:rgba(251,113,133,.22);top:-90px;right:-90px;animation:drift1 8s ease-in-out infinite alternate; }
+    .orb-2 { width:320px;height:320px;background:rgba(244,114,182,.20);bottom:220px;left:-70px;animation:drift2 10s ease-in-out infinite alternate; }
+    @keyframes drift1 { from{transform:translate(0,0)} to{transform:translate(-28px,28px)} }
+    @keyframes drift2 { from{transform:translate(0,0)} to{transform:translate(22px,-22px)} }
+
+    #landing-top {
+      position:relative; z-index:1; flex:1;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:40px 24px 20px; width:100%; max-width:480px;
     }
 
-    /* GLASSMORPHISM */
-    #raffle-section {
-      background-color: rgba(255, 255, 255, 0.15) !important;
-      backdrop-filter: blur(12px) !important;
-      -webkit-backdrop-filter: blur(12px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    .app-icon {
+      width:118px; height:118px; border-radius:28px; overflow:hidden;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 24px 60px rgba(0,0,0,.5), 0 8px 24px rgba(190,24,93,.30);
+      margin-bottom:26px; flex-shrink:0;
+      animation:iconFloat 4s ease-in-out infinite;
     }
-    #assigned-section {
-      background-color: rgba(255, 255, 255, 0.15) !important;
-      backdrop-filter: blur(10px) !important;
-      -webkit-backdrop-filter: blur(10px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    .app-icon img { width:100%;height:100%;display:block; }
+    @keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+
+    .app-title {
+      font-size:clamp(1.9rem,7vw,2.7rem); font-weight:900;
+      color:#fff; letter-spacing:-.03em; text-align:center; line-height:1.1;
+      margin-bottom:34px;
+    }
+    .app-title span { color:#fda4c8; }
+
+    /* ── Slider ── */
+    #slider-wrap { width:100%; overflow:hidden; }
+    #slider-track {
+      display:flex;
+      transition:transform .55s cubic-bezier(.4,0,.2,1);
+      will-change:transform;
+    }
+    .slide {
+      min-width:100%; display:flex; flex-direction:column;
+      align-items:center; padding:0 12px;
+    }
+    .slide-emoji { font-size:2.5rem; line-height:1; margin-bottom:10px; }
+    .slide-text  { font-size:1.06rem; font-weight:700; color:rgba(255,255,255,.92); text-align:center; line-height:1.35; }
+    .slide-sub   { font-size:.84rem; color:rgba(255,255,255,.55); text-align:center; margin-top:7px; line-height:1.45; }
+
+    #slider-dots { display:flex; gap:7px; justify-content:center; margin-top:22px; }
+    .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .35s ease;cursor:pointer; }
+    .dot.active { width:24px;border-radius:3px;background:#fda4c8; }
+
+    /* ══ PANEL INFERIOR ══ */
+    #bottom-panel {
+      position:relative; z-index:1; width:100%; max-width:480px;
+      padding:26px 26px max(26px, env(safe-area-inset-bottom, 26px));
+      background:rgba(255,255,255,.06);
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-top:.5px solid rgba(255,255,255,.10);
     }
 
-    /* NÚMERO — naranja Itaú */
-    .number-spinner { 
-      font-weight: 900; 
-      font-size: clamp(4rem, 20vw, 7rem); 
-      color: #FF6200;
-      line-height: 1;
+    #ios-hint-box {
+      background:rgba(255,255,255,.09); border:.5px solid rgba(255,255,255,.18);
+      border-radius:16px; padding:15px 17px; display:none;
+      gap:12px; align-items:flex-start; margin-bottom:16px;
     }
+    #ios-hint-box.visible { display:flex; }
+    .ios-icon-b { width:36px;height:36px;flex-shrink:0;background:#be185d;border-radius:9px;display:flex;align-items:center;justify-content:center; }
+    .ios-ht { font-weight:700;font-size:.87rem;color:#fff;margin-bottom:3px; }
+    .ios-hb { font-size:.77rem;color:rgba(255,255,255,.58);line-height:1.5; }
 
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      75% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
+    #main-install-btn {
+      width:100%; background:#be185d; color:#fff;
+      font-family:'DM Sans',sans-serif; font-size:1.08rem; font-weight:800;
+      padding:18px 24px; border:none; border-radius:18px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:11px;
+      box-shadow:0 8px 32px rgba(190,24,93,.45),0 2px 8px rgba(0,0,0,.2);
+      transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+      letter-spacing:-.01em;
     }
-    .result-animation {
-      animation: popIn 0.5s ease-out forwards;
-    }
+    #main-install-btn:hover  { background:#db2777;box-shadow:0 12px 40px rgba(219,39,119,.55);transform:translateY(-2px); }
+    #main-install-btn:active { transform:scale(.97); }
+    #main-install-btn:disabled { opacity:.4;cursor:default;transform:none; }
 
-    .loader { border-top-color: #FF6200; animation: spinner 1s linear infinite; }
-    @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    /* Prevenir scroll horizontal */
-    .main-container { width: 100% !important; max-width: 1100px !important; margin: 0 auto; }
+    #install-status { text-align:center;font-size:.77rem;color:rgba(255,255,255,.38);margin-top:13px;min-height:18px; }
+
+    /* ══ APP VIEW ══ */
+    #app-view { display:none;position:fixed;inset:0;z-index:999;background:#4a0020; }
+    #app-view.active { display:block; }
+    #app-topbar { position:absolute;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#be185d;z-index:10; }
+    #app-frame  { position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;bottom:0;border:none;width:100%;height:100%; opacity:0; }
+
+    /* ══ LOADER ══ */
+    #app-loader {
+      position:absolute; inset:0; z-index:20;
+      background: linear-gradient(160deg,#4a0020 0%,#be185d 50%,#f472b6 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:28px;
+    }
+    .loader-icon { width:100px;height:100px;border-radius:24px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.4); animation:loaderFloat 3s ease-in-out infinite; }
+    .loader-icon img { width:100%;height:100%;display:block; }
+    @keyframes loaderFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .loader-spinner {
+      width:44px; height:44px;
+      border:3px solid rgba(255,255,255,.2);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .loader-text { color:rgba(255,255,255,.65); font-size:.88rem; font-weight:600; letter-spacing:.02em; }
+
+
+
+
+    /* Toast */
+    #toast { position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;transform:translateX(-50%) translateY(60px);background:rgba(74,0,32,.95);color:#fff;font-size:.83rem;font-weight:600;padding:12px 24px;border-radius:100px;z-index:5000;backdrop-filter:blur(12px);border:.5px solid rgba(255,255,255,.15);transition:transform .4s ease,opacity .4s ease;opacity:0;pointer-events:none;white-space:nowrap; }
+    #toast.show { transform:translateX(-50%) translateY(0);opacity:1; }
+
+    /* Offline */
+    #offline-banner { position:fixed;top:0;left:0;right:0;background:#dc2626;color:#fff;font-size:.77rem;font-weight:700;text-align:center;padding:8px;z-index:8000;transform:translateY(-100%);transition:transform .3s ease; }
+    #offline-banner.show { transform:translateY(0); }
   </style>
 </head>
-<body class="antialiased">
+<body>
 
-  <div id="video-background">
-    <!-- Dos videos para crossfade real sin pantalla negra -->
-    <video id="video-a" muted playsinline preload="auto"></video>
-    <video id="video-b" muted playsinline preload="auto"></video>
-  </div>
-  <div id="video-overlay"></div>
-  <canvas id="confetti-canvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:100;"></canvas>
 
-  <div class="main-container px-4 py-8 md:py-16 min-h-screen flex flex-col justify-start">
-    
-    <header class="text-center mb-8">
-      <h1 class="font-black text-white text-4xl md:text-6xl drop-shadow-2xl uppercase tracking-tighter">
-        Sorteo de Puestos
-      </h1>
-      <p class="text-white/90 text-lg font-bold drop-shadow-md">Cadena de Ahorro 2026</p>
-    </header>
+  <div id="landing">
+    <div id="landing-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-start">
-      
-      <!-- SECCIÓN SORTEO -->
-      <div id="raffle-section" class="rounded-3xl p-6 md:p-10 shadow-2xl w-full" style="border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.25); padding:28px; min-height:560px; display:flex; flex-direction:column;">
-        
-        <h2 class="font-bold text-center flex items-center justify-center gap-2"
-            style="font-size:clamp(0.9rem, 3.5vw, 1.2rem); line-height:1.4; margin-bottom:20px; color:#ffffff;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ffffff; flex-shrink:0;"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-          ¡Ingresa tu primer nombre y da click al boton rosado!
-        </h2>
+    <div id="landing-top">
+      <div class="app-icon">
+        <img src="icons/icon-512.png" alt="Sorteo de Cadena">
+      </div>
 
-        <div id="raffle-controls" style="display:flex; flex-direction:column; gap:14px;">
-          <label for="nombre_completo" style="font-size:0.875rem; font-weight:500; color:#ffffff;">Primer Nombre</label>
-          <input type="text" id="nombre_completo"
-                 style="width:100%; padding:14px 16px; font-size:16px; border:1px solid #d1d5db; border-radius:8px; outline:none; box-sizing:border-box;"
-                 placeholder="Escribe tu primer nombre">
-          <button id="assignBtn"
-                  style="width:100%; background-color:#ec4899; color:white; font-weight:700; padding:16px; font-size:16px; border-radius:8px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background 0.2s;"
-                  onmouseover="this.style.backgroundColor='#db2777'"
-                  onmouseout="this.style.backgroundColor='#ec4899'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.3a9 9 0 1 1-6.219-8.56"/><path d="M12 2v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="M2 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="M12 22v-4"/><path d="m19.07 19.07-2.83-2.83"/><path d="M22 12h-4"/><path d="m19.07 4.93-2.83 2.83"/></svg>
-            <span id="btnText">Sortear mi puesto</span>
-            <div id="btnLoader" class="hidden loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-6 w-6"></div>
-          </button>
-        </div>
+      <h1 class="app-title">Sorteo de <span>Cadena</span></h1>
 
-        <div id="result-container"
-             style="margin-top:20px; flex:1; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f9fafb; border-radius:8px; padding:16px; border:2px dashed #e5e7eb; text-align:center;">
-          <div id="spinner" class="number-spinner hidden">00</div>
-          <div id="final-result" class="hidden">
-            <p id="result-message" style="font-size:1.1rem; margin-bottom:8px; font-weight:bold; color:#374151;"></p>
-            <p id="result-number" class="number-spinner result-animation my-4"></p>
-            <p id="result-date" style="background:#FF6200; color:white; padding:8px 16px; border-radius:8px; font-weight:700; display:inline-block; margin-top:8px;"></p>
+      <div id="slider-wrap">
+        <div id="slider-track">
+          <div class="slide">
+            <div class="slide-emoji">🎯</div>
+            <p class="slide-text">Sortea tu número<br>de la cadena</p>
+            <p class="slide-sub">Rápido, justo y sin complicaciones</p>
           </div>
-          <p id="initial-message" style="color:#6b7280;">El resultado de tu sorteo aparecera aqui.</p>
-        </div>
-
-        <div id="alert-box" class="hidden" style="margin-top:16px; padding:14px 16px; border-radius:8px; font-size:0.875rem;"></div>
-
-      </div>
-
-      <!-- SECCIÓN TABLA -->
-      <div id="assigned-section" class="rounded-3xl shadow-2xl w-full" style="border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.2); padding:28px; min-height:400px;">
-        <h2 class="font-bold text-center flex items-center justify-center gap-2"
-            style="font-size:clamp(0.9rem, 3.5vw, 1.2rem); line-height:1.4; margin-bottom:20px; color:#ffffff;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Personas que Ya Sortearon
-        </h2>
-        <div style="overflow-y:auto; max-height:400px; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden;">
-          <table style="width:100%; border-collapse:collapse;">
-            <thead style="background:rgba(249,250,251,0.9); position:sticky; top:0;">
-              <tr>
-                <th style="padding:10px 14px; text-align:left; font-size:0.7rem; font-weight:700; color:#000000; text-transform:uppercase; letter-spacing:0.05em;">Nombre</th>
-                <th style="padding:10px 14px; text-align:center; font-size:0.7rem; font-weight:700; color:#000000; text-transform:uppercase; letter-spacing:0.05em;">No. de<br>Puesto</th>
-                <th style="padding:10px 14px; text-align:left; font-size:0.7rem; font-weight:700; color:#000000; text-transform:uppercase; letter-spacing:0.05em;">Fecha de<br>Entrega</th>
-              </tr>
-            </thead>
-            <tbody id="assigned-list" style="background:rgba(255,255,255,0.5);">
-              <tr><td colspan="3" style="padding:24px; text-align:center; color:#6b7280;">Cargando...</td></tr>
-            </tbody>
-          </table>
+          <div class="slide">
+            <div class="slide-emoji">💰</div>
+            <p class="slide-text">Conoce tu fecha de<br>entrega al instante</p>
+            <p class="slide-sub">Tu número y mes quedan guardados automáticamente</p>
+          </div>
+          <div class="slide">
+            <div class="slide-emoji">🌟</div>
+            <p class="slide-text">Ahorra y haz posible<br>tus metas</p>
+            <p class="slide-sub">Cada número es un paso más cerca de lo que quieres</p>
+          </div>
         </div>
       </div>
 
+      <div id="slider-dots">
+        <div class="dot active" data-i="0"></div>
+        <div class="dot" data-i="1"></div>
+        <div class="dot" data-i="2"></div>
+      </div>
+    </div>
+
+    <div id="bottom-panel">
+      <div id="ios-hint-box">
+        <div class="ios-icon-b">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div>
+          <p class="ios-ht">Instalar en iPhone / iPad</p>
+          <p class="ios-hb">Toca <strong style="color:rgba(255,255,255,.85)">Compartir ↑</strong> en Safari → <strong style="color:rgba(255,255,255,.85)">"Añadir a pantalla de inicio"</strong></p>
+        </div>
+      </div>
+
+      <button id="main-install-btn" disabled>
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Instalar App
+      </button>
+
+      <p id="install-status">Verificando compatibilidad…</p>
     </div>
   </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
+  <div id="app-view">
+    <div id="app-topbar"></div>
+    <div id="app-loader">
+      <div class="loader-icon"><img src="icons/icon-192.png" alt="Cadena"></div>
+      <div class="loader-spinner"></div>
+      <p class="loader-text">Cargando…</p>
+    </div>
+    <iframe id="app-frame" src="about:blank" title="Sorteo de Cadena"
+      sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+  </div>
 
-    const videoPlaylist = [
-      "https://cdn.pixabay.com/video/2024/03/24/205412-926967116_large.mp4",
-      "https://cdn.pixabay.com/video/2025/08/10/296524_large.mp4",
-      "https://cdn.pixabay.com/video/2020/04/12/35774-408600310_large.mp4"
-    ];
+  <div id="toast"></div>
+  <div id="offline-banner">📡 Sin conexión — se necesita internet</div>
 
-    const videoA = document.getElementById('video-a');
-    const videoB = document.getElementById('video-b');
-
-    let currentIndex = 0;
-    let activeVideo = videoA;   // el que se ve
-    let inactiveVideo = videoB; // el que espera en segundo plano
-
-    // Carga y reproduce el primer video — fade in cuando tenga datos
-    function startFirst() {
-      activeVideo.src = videoPlaylist[0];
-      activeVideo.load();
-      activeVideo.addEventListener('canplay', function onCanPlay() {
-        activeVideo.removeEventListener('canplay', onCanPlay);
-        activeVideo.play().then(() => {
-          activeVideo.classList.add('active'); // fade in
-          prepareNext();
-        }).catch(err => console.log('Autoplay prevented:', err));
-      });
-    }
-
-    // Precarga el siguiente en el video inactivo
-    function prepareNext() {
-      const nextIndex = (currentIndex + 1) % videoPlaylist.length;
-      inactiveVideo.src = videoPlaylist[nextIndex];
-      inactiveVideo.load();
-    }
-
-    // Al terminar el activo, hace crossfade al inactivo (ya precargado)
-    function onVideoEnded() {
-      const nextIndex = (currentIndex + 1) % videoPlaylist.length;
-
-      inactiveVideo.play().then(() => {
-        // Fade in el nuevo, fade out el anterior — simultáneo = crossfade real
-        inactiveVideo.classList.add('active');
-        activeVideo.classList.remove('active');
-
-        // Intercambiar roles
-        const temp = activeVideo;
-        activeVideo = inactiveVideo;
-        inactiveVideo = temp;
-        currentIndex = nextIndex;
-
-        // Escuchar el fin del nuevo activo
-        activeVideo.addEventListener('ended', onVideoEnded, { once: true });
-
-        // Preparar el siguiente en segundo plano
-        prepareNext();
-      }).catch(err => console.log('Error on crossfade:', err));
-    }
-
-    // Arrancar
-    videoA.addEventListener('ended', onVideoEnded, { once: true });
-    startFirst();
-  });
-
-  window.addEventListener('load', function() {
+  <script>
+  (function(){
     'use strict';
+    const GAS = 'https://script.google.com/macros/s/AKfycbyaIrwEDqgXcMDofVPzqEhsSOE8qmVBQBXtDwnmpdc1eIK6vNizmz6uYekXZ7bBAP4szA/exec';
 
-    const assignBtn = document.getElementById('assignBtn');
-    const nameInput = document.getElementById('nombre_completo');
-    const spinner = document.getElementById('spinner');
-    const finalResultDiv = document.getElementById('final-result');
-    const resultMessage = document.getElementById('result-message');
-    const resultNumber = document.getElementById('result-number');
-    const resultDate = document.getElementById('result-date');
-    const initialMessage = document.getElementById('initial-message');
-    const alertBox = document.getElementById('alert-box');
-    const assignedListBody = document.getElementById('assigned-list');
-    const btnText = document.getElementById('btnText');
-    const btnLoader = document.getElementById('btnLoader');
-    const raffleControls = document.getElementById('raffle-controls');
-    const confettiCanvas = document.getElementById('confetti-canvas');
-    const myConfetti = confetti.create(confettiCanvas, { resize: true, useWorker: true });
+    const landing       = document.getElementById('landing');
+    const appView       = document.getElementById('app-view');
+    const appFrame      = document.getElementById('app-frame');
+    const installBtn    = document.getElementById('main-install-btn');
+    const installStatus = document.getElementById('install-status');
+    const iosHint       = document.getElementById('ios-hint-box');
+    const toast         = document.getElementById('toast');
+    const appLoader     = document.getElementById('app-loader');
+    const offlineBanner = document.getElementById('offline-banner');
 
-    let raffleInterval;
-    const RAFFLE_DURATION = 3000;
-    let maxRaffleNumber = 0;
+    let deferredPrompt = null;
 
-    function triggerConfetti() {
-      const duration = 5 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0, scalar: 1.8 };
-      function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-      const interval = setInterval(function() {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-        const particleCount = 50 * (timeLeft / duration);
-        myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-        myConfetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-      }, 250);
+    if ('serviceWorker' in navigator)
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+
+    /* Standalone — ir directo a la app */
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    if (isStandalone) {
+      landing.style.display = 'none';
+      launchApp(false);
+      return;
     }
 
-    function showAlert(message, type = 'error') {
-      alertBox.textContent = message;
-      alertBox.style.display = 'block';
-      if (type === 'success') {
-        alertBox.style.backgroundColor = '#d1fae5';
-        alertBox.style.color = '#065f46';
-      } else {
-        alertBox.style.backgroundColor = '#fee2e2';
-        alertBox.style.color = '#991b1b';
-      }
-      alertBox.classList.remove('hidden');
+    /* iOS */
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if (isIOS) {
+      iosHint.classList.add('visible');
+      installStatus.textContent = 'Sigue los pasos de arriba en Safari.';
+      installBtn.disabled = false;
+      installBtn.innerHTML = `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Abrir la App`;
+      installBtn.onclick = () => launchApp(false);
     }
 
-    function hideAlert() {
-      alertBox.classList.add('hidden');
-      alertBox.style.display = '';
-    }
-
-    function setButtonLoading(isLoading) {
-      assignBtn.disabled = isLoading;
-      btnText.classList.toggle('hidden', isLoading);
-      btnLoader.classList.toggle('hidden', !isLoading);
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) return 'Fecha inválida';
-      try {
-        const dateObj = new Date(dateString);
-        const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
-        return dateObj.toLocaleDateString('es-ES', options);
-      } catch (e) {
-        return 'Error en fecha';
-      }
-    }
-
-    function displayFinalResult(result) {
-      clearInterval(raffleInterval);
-      spinner.classList.add('hidden');
-      setButtonLoading(false);
-
-      if (!result) {
-        showAlert('Error: No se recibió una respuesta válida del servidor.');
-        initialMessage.classList.remove('hidden');
-        return;
-      }
-
-      if (result.puesto && result.fechaEntrega) {
-        const fechaFormatted = formatDate(result.fechaEntrega);
-        if (result.success) {
-          // Sorteo exitoso — primera vez
-          resultMessage.textContent = '¡Felicidades, ' + result.nombre + '! Tu puesto es el:';
-          triggerConfetti();
-        } else {
-          // Ya tenía puesto asignado
-          resultMessage.textContent = '⚠️ ' + result.nombre + ', ya sorteaste anteriormente. Tu puesto es el:';
-        }
-        resultNumber.textContent = result.puesto;
-        resultDate.textContent = 'Entrega: ' + fechaFormatted;
-        finalResultDiv.classList.remove('hidden');
-        raffleControls.style.display = 'none';
-        setTimeout(updateAssignedList, 500);
-      } else {
-        let message = result.message || 'Ocurrió un error desconocido.';
-        showAlert(message);
-        initialMessage.classList.remove('hidden');
-      }
-    }
-
-    function handleServerResponse(result, startTime) {
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, RAFFLE_DURATION - elapsedTime);
-      setTimeout(() => displayFinalResult(result), remainingTime);
-    }
-
-    function handleServerError(error, startTime) {
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, RAFFLE_DURATION - elapsedTime);
-      setTimeout(() => {
-        clearInterval(raffleInterval);
-        spinner.classList.add('hidden');
-        initialMessage.classList.remove('hidden');
-        setButtonLoading(false);
-        showAlert('Error de comunicación con el servidor: ' + error.message);
-      }, remainingTime);
-    }
-
-    function startRaffle() {
-      const nombreCompleto = nameInput.value.trim();
-      if (!nombreCompleto) {
-        showAlert('Por favor, ingresa tu primer nombre.');
-        return;
-      }
-      if (maxRaffleNumber <= 0) {
-        showAlert('No se pudo determinar el número de participantes. Recarga la página.');
-        return;
-      }
-      hideAlert();
-      setButtonLoading(true);
-      finalResultDiv.classList.add('hidden');
-      initialMessage.classList.add('hidden');
-      spinner.classList.remove('hidden');
-
-      const startTime = Date.now();
-      raffleInterval = setInterval(() => {
-        const randomNum = Math.floor(Math.random() * maxRaffleNumber) + 1;
-        spinner.textContent = String(randomNum).padStart(2, '0');
-      }, 80);
-
-      google.script.run
-        .withSuccessHandler(result => handleServerResponse(result, startTime))
-        .withFailureHandler(error => handleServerError(error, startTime))
-        .assignPuesto(nombreCompleto);
-    }
-
-    function resetRaffle() {
-      finalResultDiv.classList.add('hidden');
-      resetBtn.style.display = 'none';
-      hideAlert();
-      raffleControls.style.display = '';
-      initialMessage.classList.remove('hidden');
-      nameInput.value = '';
-      nameInput.focus();
-    }
-
-    function populateAssignedTable(assignedPuestos) {
-      assignedListBody.innerHTML = '';
-      if (assignedPuestos && Array.isArray(assignedPuestos) && assignedPuestos.length > 0) {
-        assignedPuestos.forEach(item => {
-          const fechaFormateada = formatDate(item.fechaEntrega);
-          const row = assignedListBody.insertRow();
-          row.style.borderBottom = '1px solid #e5e7eb';
-          row.innerHTML = `
-            <td style="padding:12px 14px; white-space:nowrap;"><div style="font-size:0.875rem; color:#1f2937; font-weight:600;">${item.nombre || 'Sin nombre'}</div></td>
-            <td style="padding:12px 14px; white-space:nowrap; text-align:center;"><div style="font-size:0.875rem; font-weight:700; color:#000000;">${item.puesto || '?'}</div></td>
-            <td style="padding:12px 14px;"><div style="font-size:0.875rem; color:#000000; white-space:normal; min-width:90px;">${fechaFormateada}</div></td>`;
-        });
-      } else {
-        assignedListBody.innerHTML = '<tr><td colspan="3" style="padding:24px; text-align:center; color:#6b7280;">Nadie ha sorteado su puesto aún.</td></tr>';
-      }
-    }
-
-    function updateAssignedList() {
-      assignedListBody.innerHTML = '<tr><td colspan="3" style="padding:24px; text-align:center;"><div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-8 w-8" style="margin:0 auto;"></div></td></tr>';
-      google.script.run
-        .withSuccessHandler(populateAssignedTable)
-        .withFailureHandler(err => {
-          showAlert('Error al cargar la lista de participantes.');
-          assignedListBody.innerHTML = `<tr><td colspan="3" style="padding:24px; text-align:center; color:#dc2626;">Error al cargar la lista.</td></tr>`;
-        })
-        .getAssignedPuestos();
-    }
-
-    function initializeApp() {
-      google.script.run
-        .withSuccessHandler(count => {
-          maxRaffleNumber = Number(count) || 0;
-          updateAssignedList();
-        })
-        .withFailureHandler(err => {
-          showAlert('Error al conectar con la hoja de cálculo.');
-        })
-        .getTotalParticipantsCount();
-    }
-
-    assignBtn.addEventListener('click', startRaffle);
-    nameInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') { e.preventDefault(); startRaffle(); }
+    /* beforeinstallprompt */
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.disabled = false;
+      installStatus.textContent = '¡Tu dispositivo es compatible!';
     });
 
-    function attemptInitialization() {
-      try {
-        if (google && google.script && google.script.run) {
-          initializeApp();
-        } else {
-          setTimeout(attemptInitialization, 100);
-        }
-      } catch (e) {
-        setTimeout(attemptInitialization, 100);
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt || installBtn.dataset.ios) return;
+      installBtn.disabled = true;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (outcome === 'accepted') {
+        installStatus.textContent = '✅ Instalando…';
+        showToast('🎉 ¡App instalada correctamente!');
+      } else {
+        installBtn.disabled = false;
+        installStatus.textContent = 'Puedes instalarla cuando quieras.';
       }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      installStatus.textContent = '✅ ¡Instalada! Ábrela desde tu pantalla de inicio.';
+      showToast('🐷 ¡Listo! Busca el ícono del cerdito');
+    });
+
+    function launchApp(fromStandalone) {
+      appView.classList.add('active');
+      appFrame.src = GAS;
+      if (!fromStandalone) {
+        landing.style.opacity='0'; landing.style.transition='opacity .35s ease';
+        setTimeout(()=>{ landing.style.display='none'; }, 350);
+      }
+
+      // El evento load en iframes cross-origin (GAS) no es confiable.
+      // Usamos un temporizador fijo: mostrar loader 4s y luego revelar el iframe.
+      function hideLoader() {
+        appFrame.style.opacity = '1';
+        appLoader.style.transition = 'opacity .5s ease';
+        appLoader.style.opacity = '0';
+        setTimeout(()=>{ appLoader.style.display = 'none'; }, 500);
+      }
+
+      // Intentar con evento load (si funciona, mejor)
+      let loaderHidden = false;
+      appFrame.addEventListener('load', function once() {
+        appFrame.removeEventListener('load', once);
+        if (!loaderHidden) { loaderHidden = true; setTimeout(hideLoader, 300); }
+      });
+
+      // Fallback garantizado a los 4 segundos
+      setTimeout(()=>{ if (!loaderHidden) { loaderHidden = true; hideLoader(); } }, 4000);
     }
 
-    attemptInitialization();
-  });
-</script>
+    window.addEventListener('offline', ()=>offlineBanner.classList.add('show'));
+    window.addEventListener('online',  ()=>offlineBanner.classList.remove('show'));
+    if (!navigator.onLine) offlineBanner.classList.add('show');
+
+    function showToast(msg,ms=3500){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),ms); }
+
+    /* Slider */
+    const track = document.getElementById('slider-track');
+    const dots  = document.querySelectorAll('.dot');
+    let cur=0, timer;
+    function goTo(i){ cur=(i+3)%3; track.style.transform=`translateX(-${cur*100}%)`; dots.forEach((d,j)=>d.classList.toggle('active',j===cur)); }
+    function startAuto(){ timer=setInterval(()=>goTo(cur+1),3400); }
+    function stopAuto(){ clearInterval(timer); }
+    dots.forEach(d=>d.addEventListener('click',()=>{ stopAuto(); goTo(+d.dataset.i); startAuto(); }));
+    let tx=0;
+    track.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;stopAuto();},{passive:true});
+    track.addEventListener('touchend',e=>{ const d=tx-e.changedTouches[0].clientX; if(Math.abs(d)>40)goTo(cur+(d>0?1:-1)); startAuto(); },{passive:true});
+    startAuto();
+  })();
+  </script>
 </body>
 </html>
